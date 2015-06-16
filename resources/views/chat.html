@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Chat</title>
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css">
+	<link rel="shortcut icon" href="http://www.yoursite.com/" />
+	<style>
+	#chat-area {
+		height: 100%;
+		width: 100%;
+	}
+
+	.input-group {
+		position: fixed;
+		bottom: 0;
+		left: 0;
+	}
+	</style>
+</head>
+<body>
+<div id="chat-area">
+	<ul class="list-group">
+	</ul>
+</div>
+<form id="chat-form">
+	<div class="input-group">
+		<input id="message" type="text" autocomplete="off" class="form-control" placeholder="Enter your message...">
+		<span class="input-group-btn">
+			<input class="btn btn-primary" type="submit" value="Send">
+		</span>
+	</div>
+</form>
+
+<script src="//code.jquery.com/jquery-2.1.4.min.js"></script>
+<script>
+var conn = new WebSocket('ws://localhost:3000');
+conn.onopen = function(e) {
+    console.log("Connection established!");
+};
+
+conn.onmessage = function(e) {
+	showMessage(e.data, 'Others');
+};
+
+$('#chat-form').on('submit', function(e) {
+	e.preventDefault();
+
+	var message = $('#message').val();
+	conn.send(message);
+	showMessage(message, 'Me');
+	$('#message').val('');
+});
+
+function showMessage(msg, sender) {
+	var messageItem = $('<li class="list-group-item"><strong>' + sender + ': </strong>' + msg + '</li>');
+
+	$('#chat-area > ul').append(messageItem);
+}
+
+</script>
+</body>
+</html>
