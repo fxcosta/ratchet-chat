@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="pt">
 
 <head>
 	<meta charset="UTF-8">
@@ -34,7 +34,6 @@
 		</div>
 	</form>
 
-	<script src="//code.jquery.com/jquery-2.1.4.min.js"></script>
 	<script>
 		var conn = new WebSocket('ws://localhost:3000');
 		conn.onopen = function (e) {
@@ -45,10 +44,11 @@
 			showMessage(e.data, 'Others');
 		};
 
-		$('#chat-form').on('submit', function (e) {
+		document.querySelector('#chat-form').addEventListener('submit', function (e) {
 			e.preventDefault();
 
-			var message = $('#message').val();
+			var messageElement = document.querySelector('#message');
+			var message = messageElement.value;
 
 			var messageData = {
 				'id': '123',
@@ -59,13 +59,20 @@
 
 			conn.send(JSON.stringify(messageDataJson));
 			showMessage(message, 'Me');
-			$('#message').val('');
+			messageElement.value = '';
 		});
 
 		function showMessage(msg, sender) {
-			var messageItem = $('<li class="list-group-item"><strong>' + sender + ': </strong>' + msg + '</li>');
+			var messageItem = document.createElement('li');
+			var className = 'list-group-item';
+			
+			if (messageItem.classList) 
+				messageItem.classList.add(className); 
+			else 
+				messageItem.className += ' ' + className;
 
-			$('#chat-area > ul').append(messageItem);
+			messageItem.innerHTML = '<strong>' + sender + ': </strong>' + msg;	
+			document.querySelector('#chat-area > ul').appendChild(messageItem);
 		}
 	</script>
 </body>
