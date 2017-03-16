@@ -55,42 +55,26 @@ class Chat implements MessageComponentInterface
     public function saveMessage($data)
     {
         
-        $db = new \mysqli('localhost', 'root', 'root', 'ratchetphp');
+        $db = new \PDO("mysql:host=localhost;dbname=ratchetphp", "root", "root"); 
         
-        $stmt = $db->prepare('
+        $stmt = $db->prepare("
 		INSERT INTO messages
-		(
-		conversationId,
-		userId,
-		content,
-		date
-		)
+		(conversationId, userId, content, date)
 		VALUES
-		(
-		?,
-		?,
-		?,
-		?
-		)
-		');
+		(?, ?, ?, ?)
+		");
         
         if ($stmt) {
-            $stmt->bind_param('iiss',
-                $data['id'],
-                $data['userId'],
-                $data['content'],
-                date('Y-m-d H:i:s')
-            );
+            $stmt->bindParam(1, $data['id']);
+            $stmt->bindParam(2, $data['userId']);
+            $stmt->bindParam(3, $data['content']);
+            $stmt->bindParam(4, date('Y-m-d H:i:s'));
             
             $stmt->execute();
             
-            $stmt->close();
-            
-            $db->close();
-            
             return true;
-        } else {
-            return false;
         }
+
+        return false;
     }
 }
